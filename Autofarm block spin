@@ -1,201 +1,220 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- Services
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local VIM = game:GetService("VirtualInputManager")
+local Player = Players.LocalPlayer
 
-local Window = Rayfield:CreateWindow({
-    Name = "Void Hub 🌀 | Blockspin 🔪",
-    Icon = 0,
-    LoadingTitle = "Void Hub | 🌀",
-    LoadingSubtitle = "by VoideX",
-    Theme = "Default",
+-- UI Setup
+local gui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
+gui.Name = "BlockSpinAutofarm"
+gui.ResetOnSpawn = false
 
-    DisableRayfieldPrompts = false,
-    DisableBuildWarnings = false,
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 270, 0, 160)
+frame.Position = UDim2.new(0, 40, 0.3, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.Active = true
+frame.Draggable = true
 
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "VoidHub",
-        FileName = "VoidHub"
-    },
+Instance.new("UICorner", frame)
 
-    Discord = {
-        Enabled = true, 
-        Invite = "Q6ndPDtK38", 
-        RememberJoins = false
-    },
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, -30, 0, 30)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.Text = "Autofarm | BlockSpin"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.TextXAlignment = Enum.TextXAlignment.Left
 
-    KeySystem = false
-})
+local closeBtn = Instance.new("TextButton", frame)
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0, 2)
+closeBtn.Text = "X"
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+closeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Instance.new("UICorner", closeBtn)
 
-local FarmTab = Window:CreateTab("--> Farm <--", nil)
+closeBtn.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
 
-local Section = FarmTab:CreateSection("⚠️Be sure to take the job before starting the autofarm.⚠️")
+local info = Instance.new("TextLabel", frame)
+info.Size = UDim2.new(1, -20, 0, 30)
+info.Position = UDim2.new(0, 10, 0, 35)
+info.Text = "⚠️ Take the job before starting ⚠️"
+info.Font = Enum.Font.Gotham
+info.TextSize = 14
+info.TextColor3 = Color3.fromRGB(255, 255, 120)
+info.BackgroundTransparency = 1
 
-local ButtonII = FarmTab:CreateButton({
-    Name = "🟢 | Start autofarm",
-    CurrentValue = false,
-    Callback = function()
-        getgenv().AutoFarm = false
-        task.wait(0.5)
-        getgenv().AutoFarm = true
+local startBtn = Instance.new("TextButton", frame)
+startBtn.Size = UDim2.new(0.9, 0, 0, 35)
+startBtn.Position = UDim2.new(0.05, 0, 0.55, 0)
+startBtn.Text = "🟢 Start Autofarm"
+startBtn.Font = Enum.Font.Gotham
+startBtn.TextSize = 14
+startBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+startBtn.BackgroundColor3 = Color3.fromRGB(50, 170, 60)
+Instance.new("UICorner", startBtn)
 
-        --- Config ---
-        local SteakSlot = Enum.KeyCode.Two
+local stopBtn = Instance.new("TextButton", frame)
+stopBtn.Size = UDim2.new(0.9, 0, 0, 35)
+stopBtn.Position = UDim2.new(0.05, 0, 0.80, 0)
+stopBtn.Text = "🔴 Stop Autofarm"
+stopBtn.Font = Enum.Font.Gotham
+stopBtn.TextSize = 14
+stopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopBtn.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
+Instance.new("UICorner", stopBtn)
 
-        --- Constants ---
-        local TweenService = game:GetService("TweenService")
-        local Players = game:GetService("Players")
-        local VIM = game:GetService("VirtualInputManager")
+-- Autofarm logic (same as original)
+startBtn.MouseButton1Click:Connect(function()
+    getgenv().AutoFarm = false
+    task.wait(0.5)
+    getgenv().AutoFarm = true
 
-        local Player = Players.LocalPlayer
+    local SteakSlot = Enum.KeyCode.Two
+    local ProgressBar = Player.PlayerGui.ProgressBar.ProgressBarFrame
+    local BarAmount = ProgressBar.MainFrame.BarAmount
+    local CookedPerfectly = ProgressBar.MainFrame.CookedPerfectly
+    local FinishBar = ProgressBar.InputFrame.FinishBar
+    local Map = workspace:WaitForChild("Map")
+    local SteakHouse = Map.Tiles.ShoppingTile.SteakHouse.Interior
+    local Fridge = SteakHouse.Fridge
+    local prompt = nil
+    local floor = workspace.Map.Tiles.ShoppingTile.SteakHouse.Exterior.Structure
+    local hitbox = workspace.Map.Tiles.ShoppingTile.SteakHouse.Hitbox
 
-        local ProgressBar = Player.PlayerGui.ProgressBar.ProgressBarFrame
-        local BarAmount = ProgressBar.MainFrame.BarAmount
-        local CookedPerfectly = ProgressBar.MainFrame.CookedPerfectly
-        local FinishBar = ProgressBar.InputFrame.FinishBar
+    local function keypress(key)
+        VIM:SendKeyEvent(true, key, false, game)
+        task.wait()
+        VIM:SendKeyEvent(false, key, false, game)
+        task.wait()
+    end
 
-        local Map = workspace:WaitForChild("Map")
-        local SteakHouse = Map.Tiles.ShoppingTile.SteakHouse.Interior
-        local Fridge = SteakHouse.Fridge
-        local prompt = nil
-        local floor = workspace.Map.Tiles.ShoppingTile.SteakHouse.Exterior.Structure
-        local hitbox = workspace.Map.Tiles.ShoppingTile.SteakHouse.Hitbox
-
-        --- Functions ---
-        local function keypress(key)
-            VIM:SendKeyEvent(true, key, false, game)
-            task.wait()
-            VIM:SendKeyEvent(false, key, false, game)
-            task.wait()
+    for _, descendant in ipairs(hitbox:GetDescendants()) do
+        if descendant:IsA("BasePart") and descendant.Name == "Part" then
+            descendant.CanCollide = false
         end
+    end
 
-        for _, descendant in ipairs(hitbox:GetDescendants()) do
-            if descendant:IsA("BasePart") and descendant.Name == "Part" then
-                descendant.CanCollide = false
-            end
+    for _, part in ipairs(floor:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name == "Floor" then
+            part.CFrame = CFrame.new(part.Position.X, 251.5, part.Position.Z)
         end
+    end
 
-        for _, part in ipairs(floor:GetDescendants()) do
-            if part:IsA("BasePart") and part.Name == "Floor" then
-                local currentPosition = part.Position
-                part.CFrame = CFrame.new(currentPosition.X, 251.5, currentPosition.Z)
-            end
-        end
-
-        for _, base in ipairs(Fridge:GetChildren()) do
-            if base.Name == "Base" then
-                for _, descendant in ipairs(base:GetDescendants()) do
-                    if descendant:IsA("ProximityPrompt") then
-                        prompt = descendant
-                        break
-                    end
-                end
-            end
-            if prompt then break end
-        end
-        
-        prompt.MaxActivationDistance = 20
-
-        for _, model in ipairs(SteakHouse:GetChildren()) do
-            if model.Name == "Grill" then
-                local mesh = model:FindFirstChild("Meshes/kitchen assets_Cube.002 (1)", true)
-                if mesh and mesh:IsA("BasePart") then
-                    mesh.CanCollide = false
-                end
-            end
-        end
-
-        for _, model in ipairs(SteakHouse:GetChildren()) do
-            if model.Name == "Grill" then
-                local grillArea = model:FindFirstChild("GrillArea", true)
-                if grillArea and grillArea:IsA("BasePart") then
-                    grillArea.Size = Vector3.new(50, 10.9, 50)
-                end
-            end
-        end
-
-        local function clickOnUi(element)
-            firesignal(element.MouseButton1Click)
-            task.wait()
-        end
-
-        local function progress()
-            return BarAmount.Size.X.Scale
-        end
-
-        local function perfect()
-            return CookedPerfectly.Position.X.Scale
-        end
-
-        local function character()
-            return Player.Character or Player.CharacterAdded:Wait()
-        end
-
-        local function humanoid()
-            return character():WaitForChild("Humanoid")
-        end
-
-        local function humanoidRootPart()
-            return character():WaitForChild("HumanoidRootPart")
-        end
-
-        while getgenv().AutoFarm do
-            local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.In)
-
-            TweenService:Create(humanoidRootPart(), tweenInfo, {
-                CFrame = CFrame.new(-262.87811279296875, 267, 332.5),
-            }):Play()
-            task.wait(1)
-            
-            TweenService:Create(humanoidRootPart(), tweenInfo, {
-                CFrame = CFrame.new(-279.27728271484375, 267, 329.9),
-            }):Play()
-            task.wait(1)
-
-            keypress(Enum.KeyCode.E)
-
-            TweenService:Create(humanoidRootPart(), tweenInfo, {
-                CFrame = CFrame.new(-262.87811279296875, 267, 332.5),
-            }):Play()
-            task.wait(1)
-
-            TweenService:Create(humanoidRootPart(), tweenInfo, {
-                CFrame = CFrame.new(-263.06512451171875, 252.54, 332.5),
-            }):Play()
-            task.wait(0.95)
-
-            while getgenv().AutoFarm and not ProgressBar.Visible do
-                keypress(SteakSlot)
-
-                -- Go back inside grill --
-                humanoid().Sit = true
-                TweenService:Create(humanoidRootPart(), TweenInfo.new(0, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                    CFrame = CFrame.new(-263.06512451171875, 252.54, 332.5),
-                }):Play()
-            end
-
-            while getgenv().AutoFarm and progress() < perfect() do
-                if not ProgressBar.Visible then
-                    warn("Failed to cook")
+    for _, base in ipairs(Fridge:GetChildren()) do
+        if base.Name == "Base" then
+            for _, descendant in ipairs(base:GetDescendants()) do
+                if descendant:IsA("ProximityPrompt") then
+                    prompt = descendant
                     break
                 end
-                task.wait()
             end
+        end
+        if prompt then break end
+    end
 
-            clickOnUi(FinishBar)
+    prompt.MaxActivationDistance = 20
 
-            print("Successfully cooked")
-
-            TweenService:Create(humanoidRootPart(), tweenInfo, {
-                CFrame = CFrame.new(-263.06512451171875, 256, 340),
-            }):Play()
-
-            humanoid().Sit = false
+    for _, model in ipairs(SteakHouse:GetChildren()) do
+        if model.Name == "Grill" then
+            local mesh = model:FindFirstChild("Meshes/kitchen assets_Cube.002 (1)", true)
+            if mesh and mesh:IsA("BasePart") then
+                mesh.CanCollide = false
+            end
         end
     end
-})
 
-local ButtonI = FarmTab:CreateButton({
-    Name = "🔴 | Stop autofarm",
-    Callback = function()
-        getgenv().AutoFarm = false
+    for _, model in ipairs(SteakHouse:GetChildren()) do
+        if model.Name == "Grill" then
+            local grillArea = model:FindFirstChild("GrillArea", true)
+            if grillArea and grillArea:IsA("BasePart") then
+                grillArea.Size = Vector3.new(50, 10.9, 50)
+            end
+        end
     end
-})
+
+    local function clickOnUi(element)
+        firesignal(element.MouseButton1Click)
+        task.wait()
+    end
+
+    local function progress()
+        return BarAmount.Size.X.Scale
+    end
+
+    local function perfect()
+        return CookedPerfectly.Position.X.Scale
+    end
+
+    local function character()
+        return Player.Character or Player.CharacterAdded:Wait()
+    end
+
+    local function humanoid()
+        return character():WaitForChild("Humanoid")
+    end
+
+    local function humanoidRootPart()
+        return character():WaitForChild("HumanoidRootPart")
+    end
+
+    while getgenv().AutoFarm do
+        local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear)
+
+        TweenService:Create(humanoidRootPart(), tweenInfo, {
+            CFrame = CFrame.new(-262.878, 267, 332.5),
+        }):Play()
+        task.wait(1)
+
+        TweenService:Create(humanoidRootPart(), tweenInfo, {
+            CFrame = CFrame.new(-279.277, 267, 329.9),
+        }):Play()
+        task.wait(1)
+
+        keypress(Enum.KeyCode.E)
+
+        TweenService:Create(humanoidRootPart(), tweenInfo, {
+            CFrame = CFrame.new(-262.878, 267, 332.5),
+        }):Play()
+        task.wait(1)
+
+        TweenService:Create(humanoidRootPart(), tweenInfo, {
+            CFrame = CFrame.new(-263.065, 252.54, 332.5),
+        }):Play()
+        task.wait(0.95)
+
+        while getgenv().AutoFarm and not ProgressBar.Visible do
+            keypress(SteakSlot)
+            humanoid().Sit = true
+            TweenService:Create(humanoidRootPart(), TweenInfo.new(0), {
+                CFrame = CFrame.new(-263.065, 252.54, 332.5),
+            }):Play()
+        end
+
+        while getgenv().AutoFarm and progress() < perfect() do
+            if not ProgressBar.Visible then
+                warn("Failed to cook")
+                break
+            end
+            task.wait()
+        end
+
+        clickOnUi(FinishBar)
+
+        TweenService:Create(humanoidRootPart(), tweenInfo, {
+            CFrame = CFrame.new(-263.065, 256, 340),
+        }):Play()
+
+        humanoid().Sit = false
+    end
+end)
+
+stopBtn.MouseButton1Click:Connect(function()
+    getgenv().AutoFarm = false
+end)
