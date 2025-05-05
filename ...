@@ -3350,7 +3350,7 @@ Disc_Title.Size = UDim2.new(0, 40, 0, 25)
 Disc_Title.Font = Enum.Font.SourceSansSemibold
 Disc_Title.Text = "Source Code"
 Disc_Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Disc_Title.TextSize = 14.000
+Disc_Title.TextSize = 12.000
 Disc_Title.TextXAlignment = Enum.TextXAlignment.Left
 
 -- Hover Effects
