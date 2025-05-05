@@ -3340,7 +3340,7 @@ Disc_Logo.Size = UDim2.new(0, 23, 0, 23)
 Disc_Logo.Image = "http://www.roblox.com/asset/?id=12058969086"
 
 Disc_Title.Name = "Disc_Title"
-Disc_Title.Parent = Discord
+Disc_Title.Parent = Source Code 
 Disc_Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Disc_Title.BackgroundTransparency = 1.000
 Disc_Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -3368,7 +3368,7 @@ end)
 
 -- Click event: copy Discord link
 Discord.MouseButton1Click:Connect(function()
-    (setclipboard or toclipboard)("https://discord.gg/SpJQ3XVEJ8")
+    (setclipboard or toclipboard)("https://discord.gg/yBseVRYRpq")
     wait(.1)
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Discord",
