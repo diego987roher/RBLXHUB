@@ -3340,7 +3340,7 @@ Disc_Logo.Size = UDim2.new(0, 23, 0, 23)
 Disc_Logo.Image = "http://www.roblox.com/asset/?id=12058969086"
 
 Disc_Title.Name = "Disc_Title"
-Disc_Title.Parent = Source Code 
+Disc_Title.Parent = Discord
 Disc_Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Disc_Title.BackgroundTransparency = 1.000
 Disc_Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -3348,7 +3348,7 @@ Disc_Title.BorderSizePixel = 0
 Disc_Title.Position = UDim2.new(0, 35, 0, 0)
 Disc_Title.Size = UDim2.new(0, 40, 0, 25)
 Disc_Title.Font = Enum.Font.SourceSansSemibold
-Disc_Title.Text = "Discord"
+Disc_Title.Text = "Source Code"
 Disc_Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Disc_Title.TextSize = 14.000
 Disc_Title.TextXAlignment = Enum.TextXAlignment.Left
